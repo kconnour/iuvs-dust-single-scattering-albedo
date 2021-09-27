@@ -9,124 +9,169 @@ from astropy.io import fits
 # TODO: trim down the white space, particularly at the top
 # TODO: Fix the IUVS section to just read in the answer
 
-plt.rc('pdf', fonttype=42)  # ???
-plt.rc('ps', fonttype=42)  # postscript
-font_size = 8
-plt.rc('font', size=font_size)
-plt.rc('axes', titlesize=font_size)
-plt.rc('axes', labelsize=font_size)
-plt.rc('axes', titlepad=3)  # Set a little space around the title
-plt.rc('xtick', labelsize=font_size)
-plt.rc('ytick', labelsize=font_size)
-plt.rc('legend', fontsize=font_size)
-plt.rc('figure', titlesize=font_size)
-plt.rc('font', **{'family': 'STIXGeneral'})  # Set the font to Stix
-plt.rc('mathtext', fontset='stix')  # Set all LaTeX font to Stix
-plt.rc('text', usetex=False)
 
-# Set the thickness of plot borders
-plthick = 0.4
-plt.rc('lines', linewidth=0.8)
-plt.rc('axes', linewidth=plthick)
-plt.rc('xtick.major', width=plthick)
-plt.rc('xtick.minor', width=plthick)
-plt.rc('ytick.major', width=plthick)
-plt.rc('ytick.minor', width=plthick)
-plt.rc('pdf', compression=3)
-plt.rcParams.update({'font.size': 8})
+def setup_plot():
+    plt.rc('pdf', fonttype=42)  # ???
+    plt.rc('ps', fonttype=42)  # postscript
+    font_size = 8
+    plt.rc('font', size=font_size)
+    plt.rc('axes', titlesize=font_size)
+    plt.rc('axes', labelsize=font_size)
+    plt.rc('axes', titlepad=3)  # Set a little space around the title
+    plt.rc('xtick', labelsize=font_size)
+    plt.rc('ytick', labelsize=font_size)
+    plt.rc('legend', fontsize=font_size)
+    plt.rc('figure', titlesize=font_size)
+    plt.rc('font', **{'family': 'STIXGeneral'})  # Set the font to Stix
+    plt.rc('mathtext', fontset='stix')  # Set all LaTeX font to Stix
+    plt.rc('text', usetex=False)
 
-fig, ax = plt.subplots()
+    # Set the thickness of plot borders
+    plthick = 0.4
+    plt.rc('lines', linewidth=0.8)
+    plt.rc('axes', linewidth=plthick)
+    plt.rc('xtick.major', width=plthick)
+    plt.rc('xtick.minor', width=plthick)
+    plt.rc('ytick.major', width=plthick)
+    plt.rc('ytick.minor', width=plthick)
+    plt.rc('pdf', compression=3)
+    plt.rcParams.update({'font.size': 8})
 
-# Set color
-cividis = plt.get_cmap('cividis')
-color_14 = list(cividis(0.1))
-color_16 = list(cividis(0.35))
-color_18 = list(cividis(0.6))
-color_20 = list(cividis(0.85))
 
-# Add IUVS results
-iteration = 5
-f0 = np.load(f'/home/kyle/ssa_retrievals/iteration{iteration}/new-fsp_new-pf_hapke-wolff_1-4size.npy')
-g0 = np.load(f'/home/kyle/ssa_retrievals/iteration{iteration}/new-fsp_new-pf_hapke-wolff_1-6size.npy')
-h0 = np.load(f'/home/kyle/ssa_retrievals/iteration{iteration}/new-fsp_new-pf_hapke-wolff_1-8size.npy')
-i0 = np.load(f'/home/kyle/ssa_retrievals/iteration{iteration}/new-fsp_new-pf_hapke-wolff_2-0size.npy')
+def make_cividis_colors():
+    cividis = plt.get_cmap('cividis')
+    return list(cividis(0.1)), list(cividis(0.35)), list(cividis(0.6)), \
+        list(cividis(0.85))
 
-iteration: int = 6
 
-# Load the retrieval
-wavs = np.load('/home/kyle/iuvs_wavelengths.npy')
-f = np.load(f'/home/kyle/ssa_retrievals/iteration{iteration}/new-fsp_new-pf_hapke-wolff_1-4size.npy')
-g = np.load(f'/home/kyle/ssa_retrievals/iteration{iteration}/new-fsp_new-pf_hapke-wolff_1-6size.npy')
-h = np.load(f'/home/kyle/ssa_retrievals/iteration{iteration}/new-fsp_new-pf_hapke-wolff_1-8size.npy')
-i = np.load(f'/home/kyle/ssa_retrievals/iteration{iteration}/new-fsp_new-pf_hapke-wolff_2-0size.npy')
+if __name__ == '__main__':
+    setup_plot()
+    color_14, color_16, color_18, color_20 = make_cividis_colors()
 
-#f_high_unc = np.load('/home/kyle/ssa_retrievals/const-fsp_const-pf_hapke-wolff_1-5size_high-uncertainty.npy')
-#f_low_unc = np.load('/home/kyle/ssa_retrievals/const-fsp_const-pf_hapke-wolff_1-5size_low-uncertainty.npy')
-# Note regarding f: It has shape (6857, 19). 4774 of them are a NaN (they have
-#  OD < 5 or too high SZA or EA. 2083 of them fit the OD and angular criteria
+    fig = plt.figure()
+    #whole = fig.add_axes(plt.axis([0, 0, 1, 1]))
+    iuvs_data = fig.add_axes([0.1, 0.1, 0.7, 0.7])
+    crism_data = fig.add_axes([0.85, 0.85, 0.1, 0.1])
 
-# Get the Gale crater pixel data
-file = '/home/kyle/repos/pyuvs-rt/ssa_files/gale_pixels_slit.fits'
-hdul = fits.open(file)
+    # Load IUVS results
+    f = np.load(f'/home/kyle/ssa_retrievals/iteration8/new-fsp_new-pf_hapke-wolff_1-4size.npy')
+    g = np.load(f'/home/kyle/ssa_retrievals/iteration8/new-fsp_new-pf_hapke-wolff_1-6size.npy')
+    h = np.load(f'/home/kyle/ssa_retrievals/iteration8/new-fsp_new-pf_hapke-wolff_1-8size.npy')
+    i = np.load(f'/home/kyle/ssa_retrievals/iteration8/new-fsp_new-pf_hapke-wolff_2-0size.npy')
+    wavs = np.load('/home/kyle/iuvs_wavelengths.npy')
 
-reflectance = hdul['reflectance'].data
-uncertainty = hdul['uncertainty'].data
+    f_hi = np.load(f'/home/kyle/ssa_retrievals/iteration8/new-fsp_new-pf_hapke-wolff_1-4size-highUnc.npy')
+    f_lo = np.load(f'/home/kyle/ssa_retrievals/iteration8/new-fsp_new-pf_hapke-wolff_1-4size-lowUnc.npy')
+    g_hi = np.load(f'/home/kyle/ssa_retrievals/iteration8/new-fsp_new-pf_hapke-wolff_1-6size-highUnc.npy')
+    g_lo = np.load(f'/home/kyle/ssa_retrievals/iteration8/new-fsp_new-pf_hapke-wolff_1-6size-lowUnc.npy')
+    h_hi = np.load(f'/home/kyle/ssa_retrievals/iteration8/new-fsp_new-pf_hapke-wolff_1-8size-highUnc.npy')
+    h_lo = np.load(f'/home/kyle/ssa_retrievals/iteration8/new-fsp_new-pf_hapke-wolff_1-8size-lowUnc.npy')
+    i_hi = np.load(f'/home/kyle/ssa_retrievals/iteration8/new-fsp_new-pf_hapke-wolff_2-0size-highUnc.npy')
+    i_lo = np.load(f'/home/kyle/ssa_retrievals/iteration8/new-fsp_new-pf_hapke-wolff_2-0size-lowUnc.npy')
 
-position = hdul['position'].data
-szas = hdul['sza'].data
-eas = hdul['ea'].data
-ls = hdul['ls'].data
+    # Get the Gale crater pixel data
+    file = '/home/kyle/repos/pyuvs-rt/ssa_files/gale_pixels_slit.fits'
+    hdul = fits.open(file)
 
-# Plot averages
-inds = np.where((szas <= 50) & (eas <= 72) & (f[:, 0] >= 0))
-f0 = np.mean(f0[inds], axis=0)
-g0 = np.mean(g0[inds], axis=0)
-h0 = np.mean(h0[inds], axis=0)
-i0 = np.mean(i0[inds], axis=0)
-f = np.mean(f[inds], axis=0)
-g = np.mean(g[inds], axis=0)
-h = np.mean(h[inds], axis=0)
-i = np.mean(i[inds], axis=0)
+    reflectance = hdul['reflectance'].data
+    uncertainty = hdul['uncertainty'].data
 
-# TODO: fix this in upcoming iteration
-fnew = (f+f0)/2
-gnew = (g+g0)/2
-hnew = (h+h0)/2
-inew = (i+i0)/2
+    position = hdul['position'].data
+    szas = hdul['sza'].data
+    eas = hdul['ea'].data
+    ls = hdul['ls'].data
 
-ax.plot(wavs, fnew, color=color_14)
-ax.plot(wavs, gnew, color=color_16)
-ax.plot(wavs, hnew, color=color_18)
-ax.plot(wavs, inew, color=color_20)
-################ End garbage section
+    inds = np.where((szas <= 50) & (eas <= 72) & (f[:, 0] >= 0))
+    n_pix = np.sum(np.where((szas <= 50) & (eas <= 72) & (f[:, 0] >= 0), 1, 0))
 
-# Add MARCI results
-ax.scatter([258, 320], [0.619, 0.648], color=color_16)
-ax.scatter([258, 320], [0.625, 0.653], color=color_18)
-ax.errorbar(258, 0.619, yerr=0.010, elinewidth=1, capthick=1, capsize=3, color=color_16, alpha=0.6)
-ax.errorbar(320, 0.648, yerr=0.005, elinewidth=1, capthick=1, capsize=3, color=color_16, alpha=0.6)
-ax.errorbar(258, 0.625, yerr=0.011, elinewidth=1, capthick=1, capsize=3, color=color_18, alpha=0.6)
-ax.errorbar(320, 0.653, yerr=0.005, elinewidth=1, capthick=1, capsize=3, color=color_18, alpha=0.6)
+    f_hi = np.sqrt(np.sum((f_hi[inds] - f[inds]) ** 2, axis=0)) / n_pix
+    f_lo = np.sqrt(np.sum((f[inds] - f_lo[inds]) ** 2, axis=0)) / n_pix
+    g_hi = np.sqrt(np.sum((g_hi[inds] - g[inds]) ** 2, axis=0)) / n_pix
+    g_lo = np.sqrt(np.sum((g[inds] - g_lo[inds]) ** 2, axis=0)) / n_pix
+    h_hi = np.sqrt(np.sum((h_hi[inds] - h[inds]) ** 2, axis=0)) / n_pix
+    h_lo = np.sqrt(np.sum((h[inds] - h_lo[inds]) ** 2, axis=0)) / n_pix
+    i_hi = np.sqrt(np.sum((i_hi[inds] - i[inds]) ** 2, axis=0)) / n_pix
+    i_lo = np.sqrt(np.sum((i[inds] - i_lo[inds]) ** 2, axis=0)) / n_pix
 
-# Add the legend
-dust_14 = patches.Patch(color=color_14, label=r'1.4 $\mu$m dust')
-dust_16 = patches.Patch(color=color_16, label='1.6 $\mu$m dust')
-dust_18 = patches.Patch(color=color_18, label='1.8 $\mu$m dust')
-dust_20 = patches.Patch(color=color_20, label='2.0 $\mu$m dust')
+    # Get the average spectra
+    f = np.mean(f[inds], axis=0)
+    g = np.mean(g[inds], axis=0)
+    h = np.mean(h[inds], axis=0)
+    i = np.mean(i[inds], axis=0)
 
-iuvs_symbol = lines.Line2D([], [], color='k', label='IUVS results')
-marci_symbol = lines.Line2D([], [], color='k', label='MARCI results', marker='o', linewidth=0)
-handles = [dust_14, dust_16, dust_18, dust_20, iuvs_symbol, marci_symbol]
-ax.legend(handles=handles)
+    # Plot the IUVS data
+    iuvs_data.plot(wavs, f, color=color_14)
+    iuvs_data.fill_between(wavs, f + f_hi, f - f_lo, color=color_14, alpha=0.5, linewidth=0)
+    iuvs_data.plot(wavs, g, color=color_16)
+    iuvs_data.fill_between(wavs, g + g_hi, g - g_lo, color=color_16, alpha=0.5, linewidth=0)
+    iuvs_data.plot(wavs, h, color=color_18)
+    iuvs_data.fill_between(wavs, h + h_hi, h - h_lo, color=color_18, alpha=0.5, linewidth=0)
+    iuvs_data.plot(wavs, i, color=color_20)
+    iuvs_data.fill_between(wavs, i + i_hi, i - i_lo, color=color_20, alpha=0.5, linewidth=0)
 
-# Set ticks
-ax.set_xticks(np.linspace(200, 325, num=6))
-ax.set_xticks(np.linspace(200, 325, num=int((325-200)/5+1)), minor=True)
-ax.set_yticks(np.linspace(0.6, 0.68, num=int((0.68-0.6)/0.005+1)), minor=True)
+    # Add MARCI results
+    iuvs_data.scatter([258, 320], [0.619, 0.648], color=color_16)
+    iuvs_data.scatter([258, 320], [0.625, 0.653], color=color_18)
+    iuvs_data.errorbar(258, 0.619, yerr=0.010, elinewidth=1, capthick=1,
+                       capsize=3, color=color_16, alpha=0.6)
+    iuvs_data.errorbar(320, 0.648, yerr=0.005, elinewidth=1, capthick=1,
+                       capsize=3, color=color_16, alpha=0.6)
+    iuvs_data.errorbar(258, 0.625, yerr=0.011, elinewidth=1, capthick=1,
+                       capsize=3, color=color_18, alpha=0.6)
+    iuvs_data.errorbar(320, 0.653, yerr=0.005, elinewidth=1, capthick=1,
+                       capsize=3, color=color_18, alpha=0.6)
 
-ax.set_xlim(200, 325)
-ax.set_ylim(0.6, 0.68)
-ax.set_xlabel('Wavelength (nm)')
-ax.set_ylabel('Single scattering albedo')
+    # Add the legend
+    dust_14 = patches.Patch(color=color_14, label=r'1.4 $\mu$m dust')
+    dust_16 = patches.Patch(color=color_16, label=r'1.6 $\mu$m dust')
+    dust_18 = patches.Patch(color=color_18, label=r'1.8 $\mu$m dust')
+    dust_20 = patches.Patch(color=color_20, label=r'2.0 $\mu$m dust')
 
-plt.savefig(f'/home/kyle/repos/iuvs-dust-single-scattering-albedo/figures/ssa_spectra.png', dpi=300)
+    iuvs_symbol = lines.Line2D([], [], color='k', label='IUVS results')
+    marci_symbol = lines.Line2D([], [], color='k', label='MARCI results',
+                                marker='o', linewidth=0)
+    handles = [dust_14, dust_16, dust_18, dust_20, iuvs_symbol, marci_symbol]
+    iuvs_data.legend(handles=handles)
+
+    # Set ticks
+    ymax = 0.66
+    ymin= 0.6
+    iuvs_data.set_xticks(np.linspace(200, 325, num=6))
+    iuvs_data.set_xticks(np.linspace(200, 325, num=int((325 - 200) / 5 + 1)),minor=True)
+    iuvs_data.set_yticks(np.linspace(ymin, ymax, num=int((ymax - ymin) / 0.005 + 1)), minor=True)
+
+    iuvs_data.set_xlim(200, 325)
+    iuvs_data.set_ylim(ymin, ymax)
+    iuvs_data.set_xlabel('Wavelength (nm)')
+    iuvs_data.set_ylabel('Single scattering albedo')
+
+    # CRISM
+    cwav = [500, 600, 700, 800, 900, 1000]
+    cssa = [0.83, 0.94, 0.97, 0.968, 0.965, 0.962]
+
+    crism_data.plot(wavs, f, color=color_14)
+    crism_data.plot(wavs, g, color=color_16)
+    crism_data.plot(wavs, h, color=color_18)
+    crism_data.plot(wavs, i, color=color_20)
+
+    crism_data.axvline(325, ymax=0.06/0.4, color='k', linewidth=0.5)
+    crism_data.axhline(0.66, xmax=125/800, color='k', linewidth=0.5)
+
+    crism_data.plot(cwav, cssa, color='k')
+
+    crism_data.set_xlim(200, 1000)
+    crism_data.set_ylim(0.6, 1)
+    crism_data.set_xticks([200, 600, 1000])
+    crism_data.set_xticks(np.linspace(200, 1000, num=9), minor=True)
+    crism_data.xaxis.tick_top()
+    crism_data.yaxis.set_label_position('right')
+    crism_data.yaxis.tick_right()
+
+    # Connector lines
+    a = np.array([0.7, 0.95])
+    b = np.array([0.1, 0.85])
+    whole.plot(a, b , color='k', linewidth=0.5)
+    #whole.scatter([0.1, 0.1, 0.1], [0.1, 0.2, 0.3])
+    whole.plot(a, b, color='k', linewidth=0.5)
+
+    plt.savefig(f'/home/kyle/repos/iuvs-dust-single-scattering-albedo/figures/ssa_spectra.pdf')
