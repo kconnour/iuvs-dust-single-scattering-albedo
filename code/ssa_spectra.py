@@ -49,9 +49,15 @@ if __name__ == '__main__':
     color_14, color_16, color_18, color_20 = make_cividis_colors()
 
     fig = plt.figure()
-    #whole = fig.add_axes(plt.axis([0, 0, 1, 1]))
-    iuvs_data = fig.add_axes([0.1, 0.1, 0.7, 0.7])
-    crism_data = fig.add_axes([0.85, 0.85, 0.1, 0.1])
+    crism_data = plt.axes([0.75, 0.75, 0.2, 0.2])
+    whole = plt.axes([0, 0, 1, 1])
+    whole.patch.set_alpha(0)
+    iuvs_data = plt.axes([0.1, 0.1, 0.85, 0.6])
+    iuvs_data.patch.set_alpha(0.85)
+
+    #whole = fig.add_axes([0, 0, 1, 1])
+    #iuvs_data = fig.add_axes([0.1, 0.1, 0.7, 0.7])
+    #crism_data = fig.add_axes([0.85, 0.85, 0.1, 0.1])
 
     # Load IUVS results
     f = np.load(f'/home/kyle/ssa_retrievals/iteration8/new-fsp_new-pf_hapke-wolff_1-4size.npy')
@@ -122,10 +128,10 @@ if __name__ == '__main__':
                        capsize=3, color=color_18, alpha=0.6)
 
     # Add the legend
-    dust_14 = patches.Patch(color=color_14, label=r'1.4 $\mu$m dust')
-    dust_16 = patches.Patch(color=color_16, label=r'1.6 $\mu$m dust')
-    dust_18 = patches.Patch(color=color_18, label=r'1.8 $\mu$m dust')
-    dust_20 = patches.Patch(color=color_20, label=r'2.0 $\mu$m dust')
+    dust_14 = patches.Patch(color=color_14, label=r'1.4 ' + u'\u03bc' + 'm dust')
+    dust_16 = patches.Patch(color=color_16, label=r'1.6 ' + u'\u03bc' + 'm dust')
+    dust_18 = patches.Patch(color=color_18, label=r'1.8 ' + u'\u03bc' + 'm dust')
+    dust_20 = patches.Patch(color=color_20, label=r'2.0 ' + u'\u03bc' + 'm dust')
 
     iuvs_symbol = lines.Line2D([], [], color='k', label='IUVS results')
     marci_symbol = lines.Line2D([], [], color='k', label='MARCI results',
@@ -149,10 +155,10 @@ if __name__ == '__main__':
     cwav = [500, 600, 700, 800, 900, 1000]
     cssa = [0.83, 0.94, 0.97, 0.968, 0.965, 0.962]
 
-    crism_data.plot(wavs, f, color=color_14)
-    crism_data.plot(wavs, g, color=color_16)
-    crism_data.plot(wavs, h, color=color_18)
-    crism_data.plot(wavs, i, color=color_20)
+    crism_data.plot(wavs, f, color=color_14, linewidth=0.5)
+    crism_data.plot(wavs, g, color=color_16, linewidth=0.5)
+    crism_data.plot(wavs, h, color=color_18, linewidth=0.5)
+    crism_data.plot(wavs, i, color=color_20, linewidth=0.5)
 
     crism_data.axvline(325, ymax=0.06/0.4, color='k', linewidth=0.5)
     crism_data.axhline(0.66, xmax=125/800, color='k', linewidth=0.5)
@@ -170,8 +176,14 @@ if __name__ == '__main__':
     # Connector lines
     a = np.array([0.7, 0.95])
     b = np.array([0.1, 0.85])
-    whole.plot(a, b , color='k', linewidth=0.5)
-    #whole.scatter([0.1, 0.1, 0.1], [0.1, 0.2, 0.3])
-    whole.plot(a, b, color='k', linewidth=0.5)
+
+    # crism, iuvs
+    whole.plot([0.78125, 0.95], [0.78, 0.7], color='k', linewidth=0.5, linestyle='--')
+    whole.plot([0.75, 0.1], [0.78, 0.7], color='k', linewidth=0.5,linestyle='--')
+    whole.plot([0.75, 0.1], [0.75, 0.1], color='k', linewidth=0.5,linestyle='--')
+    whole.plot([0.78125, 0.95], [0.75, 0.1], color='k', linewidth=0.5,linestyle='--')
+
+    whole.set_xlim(0, 1)
+    whole.set_ylim(0, 1)
 
     plt.savefig(f'/home/kyle/repos/iuvs-dust-single-scattering-albedo/figures/ssa_spectra.pdf')
